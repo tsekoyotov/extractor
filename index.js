@@ -52,7 +52,8 @@ async function extractText(file) {
   throw new Error('Unsupported file type');
 }
 
-app.post('/extract', upload.array('files'), async (req, res) => {
+// Accept one or more files with the field name `file`
+app.post('/extract', upload.array('file'), async (req, res) => {
   if (!req.files || req.files.length === 0) {
     return res.status(400).json({ status: 'error', message: 'No files uploaded' });
   }
