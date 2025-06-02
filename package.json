@@ -10,5 +10,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "cors": "*",
+    "express": "*",
+    "multer": "*",
+    "mammoth": "*",
+    "textract": "*",
+    "morgan": "*"
+  }
 }
