@@ -25,6 +25,18 @@ The server relies on the following npm packages:
 In addition, the `libreoffice-convert` package requires a local installation of
 LibreOffice to perform the `.doc` to `.docx` conversion.
 
+### Environment variables
+
+- `MAX_CONCURRENT_UPLOADS` (default: `5`): maximum number of files that can be
+  processed at the same time. Increase or decrease this value to control how
+  many uploads the server accepts concurrently.
+
+Example:
+
+```bash
+MAX_CONCURRENT_UPLOADS=10 npm start
+```
+
 ## Example usage
 
 Upload one or more `.doc` or `.docx` files using the field name `file`. An optional `chunk` query parameter splits the returned text into chunks of the given size.
