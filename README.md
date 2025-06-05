@@ -2,21 +2,11 @@
 
 ## Running locally
 
-
 Install dependencies and start the server:
 
 ```bash
 npm install
 npm start
-```
-
-## Dependencies
-
-This API relies on `mammoth` and `textract` for parsing `.docx` and `.doc` files. When processing legacy `.doc` files, `textract` requires external utilities such as `antiword` to be available in your system `PATH`.
-
-You may need to install `antiword` or a similar tool separately. On Debian-based systems:
-```bash
-sudo apt-get install antiword
 ```
 
 ## Example usage
