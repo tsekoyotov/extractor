@@ -46,8 +46,15 @@ async function extractText(file) {
     const input = await fs.readFile(file.path);
     const docxBuffer = await new Promise((resolve, reject) => {
       libre.convert(input, '.docx', undefined, (err, done) => {
-        if (err) reject(err);
-        else resolve(done);
+        if (err) {
+          if (err.code === 'ENOENT' || /spawn/.test(err.message)) {
+            reject(new Error('LibreOffice not found. Is it installed and in PATH?'));
+          } else {
+            reject(err);
+          }
+        } else {
+          resolve(done);
+        }
       });
     });
     const result = await mammoth.extractRawText({ buffer: docxBuffer });
@@ -105,3 +112,5 @@ const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
+
+export { normalizeText };
