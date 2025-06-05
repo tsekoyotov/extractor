@@ -25,6 +25,13 @@ The server relies on the following npm packages:
 In addition, the `libreoffice-convert` package requires a local installation of
 LibreOffice to perform the `.doc` to `.docx` conversion.
 
+## Windows
+
+Windows users can download LibreOffice from the
+[official installer](https://www.libreoffice.org/download/download/).
+After installation, add the directory containing the `soffice` binary to your
+`PATH` environment variable so that `libreoffice-convert` can locate it.
+
 ## Example usage
 
 Upload one or more `.doc` or `.docx` files using the field name `file`. An optional `chunk` query parameter splits the returned text into chunks of the given size.
