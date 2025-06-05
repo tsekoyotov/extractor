@@ -10,6 +10,7 @@ import path from 'path';
 const MAX_CONCURRENT_UPLOADS = parseInt(process.env.MAX_CONCURRENT_UPLOADS, 10) || 5;
 let activeUploads = 0;
 
+// Supported Word formats including the legacy `.doc` extension
 const allowedExtensions = ['.doc', '.docx'];
 
 const upload = multer({
@@ -40,6 +41,8 @@ async function extractText(file) {
     const result = await mammoth.extractRawText({ path: file.path });
     return normalizeText(result.value);
   }
+  // Legacy `.doc` files are parsed using `textract`, which relies on tools
+  // like `antiword` being available on the host system.
   if (ext === '.doc') {
     const value = await new Promise((resolve, reject) => {
       textract.fromFileWithPath(file.path, (err, val) => {
