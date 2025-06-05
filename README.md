@@ -12,10 +12,17 @@ npm start
 
 ## Dependencies
 
-This API relies on `mammoth` and `textract` for parsing `.docx` and `.doc` files. When processing legacy `.doc` files, `textract` requires external utilities such as `antiword` to be available in your system `PATH`.
+This API relies on `mammoth` for `.docx` files. Legacy `.doc` files are first
+converted to `.docx` using the `soffice` command from LibreOffice when
+available. If the conversion fails, the server falls back to using `textract`,
+which in turn requires tools like `antiword` to be installed.
 
-You may need to install `antiword` or a similar tool separately. On Debian-based systems:
+To enable the conversion approach, ensure that LibreOffice is installed and the
+`soffice` binary is in your `PATH`. Otherwise you will need `antiword` or a
+similar utility for `textract` to process `.doc` files. On Debian-based systems:
 ```bash
+sudo apt-get install libreoffice
+# or fallback
 sudo apt-get install antiword
 ```
 

@@ -2,6 +2,8 @@ import express from 'express';
 import multer from 'multer';
 import mammoth from 'mammoth';
 import textract from 'textract';
+import { execFile } from 'child_process';
+import { promisify } from 'util';
 import morgan from 'morgan';
 import cors from 'cors';
 import { promises as fs } from 'fs';
@@ -10,8 +12,20 @@ import path from 'path';
 const MAX_CONCURRENT_UPLOADS = parseInt(process.env.MAX_CONCURRENT_UPLOADS, 10) || 5;
 let activeUploads = 0;
 
+const execFileAsync = promisify(execFile);
+
 // Supported Word formats including the legacy `.doc` extension
 const allowedExtensions = ['.doc', '.docx'];
+
+async function convertDocToDocx(docPath) {
+  const dir = path.dirname(docPath);
+  try {
+    await execFileAsync('soffice', ['--headless', '--convert-to', 'docx', docPath, '--outdir', dir]);
+    return docPath.replace(/\.doc$/i, '.docx');
+  } catch (err) {
+    throw new Error('Failed to convert .doc to .docx: ' + err.message);
+  }
+}
 
 const upload = multer({
   dest: '/tmp',
@@ -41,16 +55,23 @@ async function extractText(file) {
     const result = await mammoth.extractRawText({ path: file.path });
     return normalizeText(result.value);
   }
-  // Legacy `.doc` files are parsed using `textract`, which relies on tools
-  // like `antiword` being available on the host system.
   if (ext === '.doc') {
-    const value = await new Promise((resolve, reject) => {
-      textract.fromFileWithPath(file.path, (err, val) => {
-        if (err) reject(err);
-        else resolve(val);
+    // Attempt conversion using LibreOffice/soffice if available
+    try {
+      const docxPath = await convertDocToDocx(file.path);
+      const result = await mammoth.extractRawText({ path: docxPath });
+      try { await fs.unlink(docxPath); } catch {}
+      return normalizeText(result.value);
+    } catch (convErr) {
+      // Fallback to textract which relies on tools like `antiword`
+      const value = await new Promise((resolve, reject) => {
+        textract.fromFileWithPath(file.path, (err, val) => {
+          if (err) reject(err);
+          else resolve(val);
+        });
       });
-    });
-    return normalizeText(value);
+      return normalizeText(value);
+    }
   }
   throw new Error('Unsupported file type');
 }
