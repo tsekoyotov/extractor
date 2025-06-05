@@ -8,6 +8,7 @@ import morgan from 'morgan';
 import cors from 'cors';
 import { promises as fs } from 'fs';
 import path from 'path';
+import os from 'os';
 
 const MAX_CONCURRENT_UPLOADS = parseInt(process.env.MAX_CONCURRENT_UPLOADS, 10) || 5;
 let activeUploads = 0;
@@ -15,7 +16,7 @@ let activeUploads = 0;
 const allowedExtensions = ['.doc', '.docx'];
 
 const upload = multer({
-  dest: '/tmp',
+  dest: os.tmpdir(),
   limits: { fileSize: 20 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const ext = path.extname(file.originalname).toLowerCase();
