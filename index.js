@@ -1,7 +1,9 @@
 import express from 'express';
 import multer from 'multer';
 import mammoth from 'mammoth';
-import textract from 'textract';
+// TODO: Requires 'libreoffice-convert' package and LibreOffice to be installed
+// for converting .doc files to .docx.
+import libre from 'libreoffice-convert';
 import morgan from 'morgan';
 import cors from 'cors';
 import { promises as fs } from 'fs';
@@ -41,13 +43,15 @@ async function extractText(file) {
     return normalizeText(result.value);
   }
   if (ext === '.doc') {
-    const value = await new Promise((resolve, reject) => {
-      textract.fromFileWithPath(file.path, (err, val) => {
+    const input = await fs.readFile(file.path);
+    const docxBuffer = await new Promise((resolve, reject) => {
+      libre.convert(input, '.docx', undefined, (err, done) => {
         if (err) reject(err);
-        else resolve(val);
+        else resolve(done);
       });
     });
-    return normalizeText(value);
+    const result = await mammoth.extractRawText({ buffer: docxBuffer });
+    return normalizeText(result.value);
   }
   throw new Error('Unsupported file type');
 }

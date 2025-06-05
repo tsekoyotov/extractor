@@ -16,7 +16,7 @@
     "express": "*",
     "multer": "*",
     "mammoth": "*",
-    "textract": "*",
+    "libreoffice-convert": "*",
     "morgan": "*"
   }
 }

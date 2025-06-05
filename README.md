@@ -9,6 +9,22 @@ npm install
 npm start
 ```
 
+### Required packages
+
+The server relies on the following npm packages:
+
+```
+- express
+- multer
+- morgan
+- cors
+- mammoth
+- libreoffice-convert
+```
+
+In addition, the `libreoffice-convert` package requires a local installation of
+LibreOffice to perform the `.doc` to `.docx` conversion.
+
 ## Example usage
 
 Upload one or more `.doc` or `.docx` files using the field name `file`. An optional `chunk` query parameter splits the returned text into chunks of the given size.
